@@ -47,35 +47,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onLoginSuccess,
   soundEnabled,
 }) => {
-  const [authMode, setAuthMode] = useState<'LOGIN' | 'CADASTRO' | 'PERFIS_RAPIDOS'>('LOGIN');
+  const [authMode, setAuthMode] = useState<'PERFIS_RAPIDOS'>('PERFIS_RAPIDOS');
   const [loginMethod, setLoginMethod] = useState<'CNS_CPF' | 'BIOMETRIA'>('CNS_CPF');
   const [isScanningBiometry, setIsScanningBiometry] = useState(false);
   const [biometryProgress, setBiometryProgress] = useState(0);
-
-  // Login form state
-  const [cnsInput, setCnsInput] = useState('7894.5612.3301.8890');
-  const [passwordInput, setPasswordInput] = useState('123456');
-  const [selectedRole, setSelectedRole] = useState<UserRole>(currentRole);
-
-  // Cadastro form state
-  const [cadName, setCadName] = useState('');
-  const [cadCpf, setCadCpf] = useState('');
-  const [cadCns, setCadCns] = useState('');
-  const [cadAge, setCadAge] = useState('68');
-  const [cadPhone, setCadPhone] = useState('(11) 98765-4321');
-  const [cadUbs, setCadUbs] = useState('UBS Jardim Primavera');
-  const [cadEsf, setCadEsf] = useState('Equipe 04 - Florescer');
-  const [cadCaregiver, setCadCaregiver] = useState('Juliana Ferreira (Filha)');
-  const [cadCaregiverPhone, setCadCaregiverPhone] = useState('(11) 99123-8877');
-  const [cadConditions, setCadConditions] = useState<string[]>([
-    'Hipertensão Arterial Sistêmica',
-    'Diabetes Mellitus Tipo 2',
-  ]);
-  const [cadMedications, setCadMedications] = useState<string[]>([
-    'Losartana Potássica 50mg (1x ao dia)',
-    'Metformina 850mg (2x ao dia)',
-  ]);
-  const [cadAutonomy, setCadAutonomy] = useState<AutonomyLevel>('ASSISTIDO');
 
   // Pre-configured role profiles for 1-click test
   const demoProfiles: { role: UserRole; title: string; subtitle: string; profile: UserProfile; icon: any; color: string }[] = [
@@ -224,36 +199,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     onClose();
   };
 
-  const handleNormalLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    const matched = demoProfiles.find((p) => p.role === selectedRole) || demoProfiles[0];
-    triggerLoginWithProfile(matched.profile, selectedRole);
-  };
 
-  const handleNewRegistration = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newProf: UserProfile = {
-      id: `patient-custom-${Date.now()}`,
-      name: cadName.trim() || 'Cidadão Cadastrado',
-      role: 'PACIENTE',
-      autonomyLevel: cadAutonomy,
-      cpfMasked: cadCpf ? `***.${cadCpf.slice(-6, -2)}.**` : '***.789.123-**',
-      cns: cadCns.trim() || '7890.1234.5678.9900',
-      birthDate: '1960-01-01',
-      age: parseInt(cadAge) || 65,
-      phone: cadPhone,
-      ubsReference: cadUbs,
-      esfTeam: cadEsf,
-      microArea: 'Microárea 03',
-      acsName: 'Márcia Oliveira (ACS)',
-      caregiverName: cadCaregiver,
-      caregiverPhone: cadCaregiverPhone,
-      address: 'Endereço cadastrado na UBS',
-      conditions: cadConditions,
-      medications: cadMedications,
-    };
-    triggerLoginWithProfile(newProf, 'PACIENTE');
-  };
+
+
 
   return (
     <div
@@ -292,46 +240,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </button>
         </div>
 
-        {/* Tab switch: Login / Cadastro / Perfis Prontos */}
-        <div className="grid grid-cols-3 p-2 bg-slate-950/70 border-b border-slate-800 gap-1 text-xs font-bold">
-          <button
-            id="tab-auth-login"
-            onClick={() => setAuthMode('LOGIN')}
-            className={`py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all ${
-              authMode === 'LOGIN'
-                ? 'bg-blue-600 text-white shadow'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <LogIn className="w-4 h-4" />
-            <span>Entrar</span>
-          </button>
-
-          <button
-            id="tab-auth-cadastro"
-            onClick={() => setAuthMode('CADASTRO')}
-            className={`py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all ${
-              authMode === 'CADASTRO'
-                ? 'bg-emerald-600 text-white shadow'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <UserPlus className="w-4 h-4" />
-            <span>Criar Cadastro</span>
-          </button>
-
-          <button
-            id="tab-auth-perfis"
-            onClick={() => setAuthMode('PERFIS_RAPIDOS')}
-            className={`py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-all ${
-              authMode === 'PERFIS_RAPIDOS'
-                ? 'bg-purple-600 text-white shadow'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>Troca Rápida</span>
-          </button>
+        {/* Tab switch: Perfis Prontos */}
+        <div className="p-2 bg-slate-950/70 border-b border-slate-800 text-xs font-bold text-center text-slate-300">
+          Selecione um perfil para começar:
         </div>
 
         {/* Content body */}
@@ -397,29 +308,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </div>
               ) : (
                 <form onSubmit={handleNormalLogin} className="space-y-3.5">
+                  {error && (
+                    <div className="p-3 bg-red-950/50 border border-red-700 rounded-xl flex items-center gap-2.5 text-xs text-red-300">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-300 flex items-center justify-between">
-                      <span>Cartão Nacional de Saúde (CNS) ou CPF</span>
-                      <span className="text-[10px] text-emerald-400">Gov.br / SUS</span>
-                    </label>
+                    <label className="text-xs font-bold text-slate-300">Email</label>
                     <div className="relative">
-                      <CreditCard className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input
-                        type="text"
-                        value={cnsInput}
-                        onChange={(e) => setCnsInput(e.target.value)}
-                        placeholder="Ex: 7894.5612.3301.8890"
-                        className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700 rounded-2xl text-white text-sm focus:outline-none focus:border-blue-500 font-mono"
+                        type="email"
+                        value={emailInput}
+                        onChange={(e) => setEmailInput(e.target.value)}
+                        placeholder="seu.email@example.com"
+                        className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700 rounded-2xl text-white text-sm focus:outline-none focus:border-blue-500"
                         required
+                        disabled={isLoading}
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-300 flex items-center justify-between">
-                      <span>Senha de Acesso / PIN</span>
-                      <span className="text-[10px] text-slate-400">Padrão: 123456</span>
-                    </label>
+                    <label className="text-xs font-bold text-slate-300">Senha</label>
                     <div className="relative">
                       <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                       <input
@@ -429,43 +342,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         placeholder="••••••"
                         className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700 rounded-2xl text-white text-sm focus:outline-none focus:border-blue-500"
                         required
+                        disabled={isLoading}
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-300">
-                      Entrar como:
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {[
-                        { role: 'PACIENTE', label: 'Cidadão / Paciente' },
-                        { role: 'CUIDADOR', label: 'Cuidadora Familiar' },
-                        { role: 'ACS', label: 'Agente de Saúde (ACS)' },
-                        { role: 'MEDICO_UBS', label: 'Médico da UBS' },
-                      ].map((item) => (
-                        <button
-                          key={item.role}
-                          type="button"
-                          onClick={() => setSelectedRole(item.role as UserRole)}
-                          className={`p-2 rounded-xl text-xs font-semibold border transition-all text-left ${
-                            selectedRole === item.role
-                              ? 'bg-blue-600/30 border-blue-400 text-white'
-                              : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                  <p className="text-xs text-slate-400 text-center">
+                    Não tem cadastro? <button type="button" onClick={() => { setAuthMode('CADASTRO'); setError(''); }} className="text-emerald-400 hover:text-emerald-300 font-bold">Clique aqui para se cadastrar</button>
+                  </p>
 
                   <button
                     type="submit"
-                    className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl text-sm shadow-lg shadow-blue-900/40 transition-transform active:scale-95 flex items-center justify-center gap-2 mt-2"
+                    disabled={isLoading}
+                    className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-black rounded-2xl text-sm shadow-lg shadow-blue-900/40 transition-transform active:scale-95 flex items-center justify-center gap-2 mt-2"
                   >
-                    <span>Entrar no SEDA</span>
-                    <ArrowRight className="w-4 h-4" />
+                    {isLoading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Entrando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Entrar no SEDA</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
                   </button>
                 </form>
               )}
@@ -475,13 +376,59 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           {/* 2. MODO CADASTRO COMPLETO */}
           {authMode === 'CADASTRO' && (
             <form onSubmit={handleNewRegistration} className="space-y-3.5 animate-fadeIn">
+              {error && (
+                <div className="p-3 bg-red-950/50 border border-red-700 rounded-xl flex items-center gap-2.5 text-xs text-red-300">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {successMessage && (
+                <div className="p-3 bg-emerald-950/50 border border-emerald-700 rounded-xl flex items-center gap-2.5 text-xs text-emerald-300">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                  <span>{successMessage}</span>
+                </div>
+              )}
+
               <div className="p-3 bg-emerald-950/40 border border-emerald-800/60 rounded-2xl flex items-center gap-2.5 text-xs text-emerald-300">
                 <ShieldCheck className="w-5 h-5 flex-shrink-0 text-emerald-400" />
                 <span>Cadastro vinculado à Atenção Primária à Saúde e ao Prontuário Eletrônico SUS (e-SUS APS).</span>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-300">Nome Completo do Paciente</label>
+                <label className="text-xs font-bold text-slate-300">Email (para login)</label>
+                <div className="relative">
+                  <User className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="email"
+                    value={cadEmail}
+                    onChange={(e) => setCadEmail(e.target.value)}
+                    placeholder="seu.email@example.com"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500"
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-300">Senha (mín. 6 caracteres)</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="password"
+                    value={cadPassword}
+                    onChange={(e) => setCadPassword(e.target.value)}
+                    placeholder="••••••"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500"
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-300">Nome Completo</label>
                 <input
                   type="text"
                   value={cadName}
@@ -489,10 +436,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   placeholder="Ex: Maria das Dores Silva"
                   className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-500"
                   required
+                  disabled={isLoading}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-300">CPF</label>
+                  <input
+                    type="text"
+                    value={cadCpf}
+                    onChange={(e) => setCadCpf(e.target.value)}
+                    placeholder="12345678901"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs font-mono focus:outline-none focus:border-emerald-500"
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-300">Cartão SUS (CNS)</label>
                   <input
@@ -501,9 +462,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     onChange={(e) => setCadCns(e.target.value)}
                     placeholder="7000.0000.0000.0000"
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs font-mono focus:outline-none focus:border-emerald-500"
+                    required
+                    disabled={isLoading}
                   />
                 </div>
+              </div>
 
+              <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs font-bold text-slate-300">Idade (Anos)</label>
                   <input
@@ -511,6 +476,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={cadAge}
                     onChange={(e) => setCadAge(e.target.value)}
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-emerald-500"
+                    disabled={isLoading}
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-300">Telefone</label>
+                  <input
+                    type="tel"
+                    value={cadPhone}
+                    onChange={(e) => setCadPhone(e.target.value)}
+                    placeholder="(11) 98765-4321"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-emerald-500"
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -523,6 +501,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={cadUbs}
                     onChange={(e) => setCadUbs(e.target.value)}
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-emerald-500"
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -533,39 +512,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={cadEsf}
                     onChange={(e) => setCadEsf(e.target.value)}
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-white text-xs focus:outline-none focus:border-emerald-500"
-                  />
-                </div>
-              </div>
-
-              <div className="p-3 bg-slate-950 border border-slate-800 rounded-2xl space-y-2">
-                <span className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
-                  <HeartHandshake className="w-4 h-4" />
-                  <span>Cuidadora / Familiar de Apoio (Opcional)</span>
-                </span>
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="text"
-                    value={cadCaregiver}
-                    onChange={(e) => setCadCaregiver(e.target.value)}
-                    placeholder="Nome da Filha/Cuidadora"
-                    className="px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs focus:outline-none"
-                  />
-                  <input
-                    type="text"
-                    value={cadCaregiverPhone}
-                    onChange={(e) => setCadCaregiverPhone(e.target.value)}
-                    placeholder="Telefone da Cuidadora"
-                    className="px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs focus:outline-none"
+                    disabled={isLoading}
                   />
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-2xl text-sm shadow-lg shadow-emerald-900/40 transition-transform active:scale-95 flex items-center justify-center gap-2"
+                disabled={isLoading}
+                className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-black rounded-2xl text-sm shadow-lg shadow-emerald-900/40 transition-transform active:scale-95 flex items-center justify-center gap-2"
               >
-                <CheckCircle2 className="w-5 h-5" />
-                <span>Concluir Cadastro & Acessar</span>
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Cadastrando...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-5 h-5" />
+                    <span>Concluir Cadastro</span>
+                  </>
+                )}
               </button>
             </form>
           )}
