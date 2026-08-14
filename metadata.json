@@ -1,0 +1,7 @@
+{
+  "name": "SEDA - Sistema de Equilíbrio de Diabetes e Artérias",
+  "description": "Plataforma de autocuidado assistido, monitoramento de Hipertensão e Diabetes e marcação de consultas integrado ao SUS e Atenção Primária.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
